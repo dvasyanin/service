@@ -20,6 +20,7 @@ func NewMobileRepo() MobileRepo {
 type mobileRepo struct {
 }
 
+// базовый запрос в api
 func request(url string, headers map[string]string, body string) ([]byte, error) {
 	client := resty.New()
 	resp, err := client.R().
