@@ -1,0 +1,33 @@
+image: golang:1.13
+
+stages:
+  - test
+  - production
+
+before_script:
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  - mkdir ~/.ssh
+  - chmod 700 ~/.ssh
+  - touch ~/.ssh/known_hosts
+  - chmod 644 ~/.ssh/known_hosts
+  - ssh-keyscan esb-app01.12storeez.com >> ~/.ssh/known_hosts
+
+test:
+  stage: test
+  only:
+    refs:
+      - master
+  script:
+    - go test ./...
+
+production:
+  type: deploy
+  stage: production
+  only:
+    refs:
+      - master
+
+  script:
+    - ssh admin@esb-app01.12storeez.com "cd /srv/services/mindbox-srv-go && git pull && docker-compose up -d --force-recreate --no-deps --build"

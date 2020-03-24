@@ -1,0 +1,17 @@
+version: '3.5'
+
+services:
+  mindbox-srv-go:
+    restart: always
+    container_name: "mindbox-srv-go"
+    build: .
+    ports:
+      - 50052:50051
+    networks:
+      - service-backend
+    environment:
+      MICRO_SERVER_ADDRESS: ":50051"
+
+networks:
+  service-backend:
+    name: service-backend
